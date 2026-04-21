@@ -1,0 +1,174 @@
+{
+  "sha256:2516e99780760bc0": {
+    "name": "CalculatorAgent",
+    "schema_version": "1.0.0",
+    "version": "1.0.0",
+    "description": "A simple agent that performs arithmetic and unit conversions.",
+    "authors": [
+      "CalculatorAgent"
+    ],
+    "created_at": "2026-04-21T09:42:20.184988+00:00",
+    "skills": [
+      {
+        "id": 101
+      }
+    ],
+    "domains": [],
+    "modules": [
+      {
+        "id": 203,
+        "name": "integration/a2a",
+        "data": {
+          "card_data": {
+            "capabilities": {
+              "streaming": false
+            },
+            "defaultInputModes": [
+              "text"
+            ],
+            "defaultOutputModes": [
+              "text"
+            ],
+            "description": "A simple agent that performs arithmetic and unit conversions.",
+            "name": "CalculatorAgent",
+            "preferredTransport": "JSONRPC",
+            "protocolVersion": "0.3.0",
+            "skills": [
+              {
+                "description": "Add two numbers together",
+                "id": "add",
+                "inputModes": [
+                  "text"
+                ],
+                "name": "add",
+                "outputModes": [
+                  "text"
+                ],
+                "tags": [
+                  "add"
+                ]
+              },
+              {
+                "description": "Multiply two numbers",
+                "id": "multiply",
+                "inputModes": [
+                  "text"
+                ],
+                "name": "multiply",
+                "outputModes": [
+                  "text"
+                ],
+                "tags": [
+                  "multiply"
+                ]
+              },
+              {
+                "description": "Convert a temperature from Celsius to Fahrenheit",
+                "id": "celsius_to_fahrenheit",
+                "inputModes": [
+                  "text"
+                ],
+                "name": "celsius_to_fahrenheit",
+                "outputModes": [
+                  "text"
+                ],
+                "tags": [
+                  "celsius_to_fahrenheit"
+                ]
+              }
+            ],
+            "url": "http://localhost:8000/mcp",
+            "version": "1.0.0"
+          },
+          "card_schema_version": "v1.0.0"
+        }
+      }
+    ]
+  },
+  "sha256:eb5246e17e90a46c": {
+    "name": "CalculatorAgent",
+    "schema_version": "1.0.0",
+    "version": "1.0.0",
+    "description": "A simple agent that performs arithmetic and unit conversions.",
+    "authors": [
+      "CalculatorAgent"
+    ],
+    "created_at": "2026-04-21T10:00:26.027140+00:00",
+    "skills": [
+      {
+        "id": 101
+      }
+    ],
+    "domains": [],
+    "modules": [
+      {
+        "id": 203,
+        "name": "integration/a2a",
+        "data": {
+          "card_data": {
+            "capabilities": {
+              "streaming": false
+            },
+            "defaultInputModes": [
+              "text"
+            ],
+            "defaultOutputModes": [
+              "text"
+            ],
+            "description": "A simple agent that performs arithmetic and unit conversions.",
+            "name": "CalculatorAgent",
+            "preferredTransport": "JSONRPC",
+            "protocolVersion": "0.3.0",
+            "skills": [
+              {
+                "description": "Add two numbers together",
+                "id": "add",
+                "inputModes": [
+                  "text"
+                ],
+                "name": "add",
+                "outputModes": [
+                  "text"
+                ],
+                "tags": [
+                  "add"
+                ]
+              },
+              {
+                "description": "Multiply two numbers",
+                "id": "multiply",
+                "inputModes": [
+                  "text"
+                ],
+                "name": "multiply",
+                "outputModes": [
+                  "text"
+                ],
+                "tags": [
+                  "multiply"
+                ]
+              },
+              {
+                "description": "Convert a temperature from Celsius to Fahrenheit",
+                "id": "celsius_to_fahrenheit",
+                "inputModes": [
+                  "text"
+                ],
+                "name": "celsius_to_fahrenheit",
+                "outputModes": [
+                  "text"
+                ],
+                "tags": [
+                  "celsius_to_fahrenheit"
+                ]
+              }
+            ],
+            "url": "http://localhost:8000/mcp",
+            "version": "1.0.0"
+          },
+          "card_schema_version": "v1.0.0"
+        }
+      }
+    ]
+  }
+}
