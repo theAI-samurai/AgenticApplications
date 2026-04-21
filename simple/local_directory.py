@@ -1,11 +1,5 @@
 """
 LocalDirectory — a file-backed implementation of BaseAgentDirectory.
-
-Records are persisted to a JSON file so separate processes (agent.py and
-client.py) share the same registry on disk.
-
-Swap it for AgentDirectory(endpoint="127.0.0.1:8888") when a real
-agntcy-dir gRPC service is available.
 """
 
 from __future__ import annotations
@@ -24,22 +18,11 @@ logger = get_logger(__name__)
 
 
 def _cid(record: dict[str, Any]) -> str:
-    """Compute a deterministic content-identifier for a record dict."""
     blob = json.dumps(record, sort_keys=True, default=str).encode()
     return "sha256:" + hashlib.sha256(blob).hexdigest()[:16]
 
 
 class LocalDirectory(BaseAgentDirectory):
-    """
-    File-backed agent directory — drop-in replacement for AgentDirectory.
-
-    Parameters
-    ----------
-    registry_file:
-        Path to the JSON file used as the backing store.
-        Defaults to in-memory only (no persistence across processes).
-    """
-
     DIRECTORY_TYPE: str = "local"
 
     @classmethod
@@ -50,10 +33,6 @@ class LocalDirectory(BaseAgentDirectory):
         self._registry_file = registry_file
         self._records: dict[str, dict[str, Any]] = {}
 
-    # ------------------------------------------------------------------
-    # Persistence helpers
-    # ------------------------------------------------------------------
-
     def _load(self) -> None:
         if self._registry_file and os.path.exists(self._registry_file):
             with open(self._registry_file) as f:
@@ -63,10 +42,6 @@ class LocalDirectory(BaseAgentDirectory):
         if self._registry_file:
             with open(self._registry_file, "w") as f:
                 json.dump(self._records, f, indent=2)
-
-    # ------------------------------------------------------------------
-    # Lifecycle
-    # ------------------------------------------------------------------
 
     async def setup(self) -> None:
         self._load()
@@ -81,10 +56,6 @@ class LocalDirectory(BaseAgentDirectory):
         self._records.clear()
         logger.info("LocalDirectory: saved and cleared")
 
-    # ------------------------------------------------------------------
-    # Store API
-    # ------------------------------------------------------------------
-
     async def push_agent_record(
         self,
         record: Any,
@@ -92,7 +63,6 @@ class LocalDirectory(BaseAgentDirectory):
         *args: Any,
         **kwargs: Any,
     ) -> str:
-        """Push a record (AgentCard or OASF dict) and return its CID."""
         if isinstance(record, AgentCard):
             oasf_dict = agent_card_to_oasf(record)
         elif isinstance(record, dict):
@@ -114,7 +84,6 @@ class LocalDirectory(BaseAgentDirectory):
         extract_card: bool = False,
         **kwargs: Any,
     ) -> dict[str, Any] | AgentCard | None:
-        """Pull a record by CID string. Returns None if not found."""
         self._load()
         cid = ref if isinstance(ref, str) else str(ref)
         oasf_dict = self._records.get(cid)
@@ -133,7 +102,6 @@ class LocalDirectory(BaseAgentDirectory):
         *args: Any,
         **kwargs: Any,
     ) -> list[dict[str, Any]]:
-        """Search records by name substring (case-insensitive)."""
         self._load()
         results: list[dict[str, Any]] = []
         for record in self._records.values():
@@ -146,10 +114,6 @@ class LocalDirectory(BaseAgentDirectory):
             if len(results) >= limit:
                 break
         return results
-
-    # ------------------------------------------------------------------
-    # Not-yet-implemented stubs
-    # ------------------------------------------------------------------
 
     async def delete_agent_record(self, ref: Any, *args: Any, **kwargs: Any) -> None:
         self._load()

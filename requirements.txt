@@ -8,3 +8,6 @@ mcp==1.27.0
 
 # A2A protocol types (AgentCard, AgentSkill, …)
 a2a-sdk==0.3.20
+
+# ASGI server for deployment
+uvicorn[standard]

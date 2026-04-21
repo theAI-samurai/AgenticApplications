@@ -1,10 +1,4 @@
-"""
-OASF (Open Agentic Schema Framework) - Agent Record Definition
-
-An OASF record describes an AI agent's capabilities, metadata, and skills
-in a standardized, interoperable format. This is the foundation for agent
-discovery across distributed systems.
-"""
+"""OASF (Open Agentic Schema Framework) record definition for simple demo."""
 
 from dataclasses import dataclass, field
 from typing import Any
@@ -14,7 +8,6 @@ from a2a.types import AgentCard, AgentCapabilities, AgentSkill
 
 @dataclass
 class OASFSkill:
-    """Represents a single capability the agent has."""
     name: str
     description: str
     input_schema: dict[str, Any] = field(default_factory=dict)
@@ -23,27 +16,16 @@ class OASFSkill:
 
 @dataclass
 class OASFRecord:
-    """
-    OASF Agent Record — standard metadata structure for AI agents.
-    Inspired by OCSF (Open Cybersecurity Schema Framework).
-    """
-    # Identity
     name: str
     version: str
     description: str
     author: str
-
-    # Taxonomy
-    domain: str          # e.g. "productivity", "data-analysis", "customer-support"
-    category: str        # e.g. "tool-use", "reasoning", "retrieval"
-
-    # Capabilities
+    domain: str
+    category: str
     skills: list[OASFSkill] = field(default_factory=list)
     input_modes: list[str] = field(default_factory=lambda: ["text"])
     output_modes: list[str] = field(default_factory=lambda: ["text"])
     streaming: bool = False
-
-    # Extensions (arbitrary metadata — OASF is extensible)
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -70,16 +52,6 @@ class OASFRecord:
         }
 
     def to_agent_card(self, url: str) -> AgentCard:
-        """
-        Convert this OASF record to an A2A AgentCard so it can be pushed
-        to the Agntcy Directory and discovered by other agents.
-
-        Parameters
-        ----------
-        url:
-            The HTTP endpoint where the agent's MCP server is reachable
-            (e.g. "http://localhost:8000/mcp").
-        """
         return AgentCard(
             name=self.name,
             description=self.description,
@@ -101,8 +73,6 @@ class OASFRecord:
             ],
         )
 
-
-# ── Define the agent record for our demo "Calculator Agent" ──────────────────
 
 calculator_record = OASFRecord(
     name="CalculatorAgent",
@@ -134,9 +104,3 @@ calculator_record = OASFRecord(
     streaming=False,
     extensions={"license": "Apache-2.0", "tags": ["math", "conversion"]},
 )
-
-
-if __name__ == "__main__":
-    import json
-    print("=== OASF Agent Record ===")
-    print(json.dumps(calculator_record.to_dict(), indent=2))
