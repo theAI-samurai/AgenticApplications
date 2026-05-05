@@ -1,0 +1,6 @@
+ag-ui-protocol>=0.1.15
+fastapi>=0.115
+fastmcp>=2.0
+httpx>=0.27
+streamlit>=1.36
+uvicorn[standard]>=0.30
