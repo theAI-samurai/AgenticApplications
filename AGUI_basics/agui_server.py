@@ -128,6 +128,14 @@ async def _stream_text(
 async def run_agent(input_data: RunAgentInput, request: Request) -> StreamingResponse:
     encoder = EventEncoder(accept=request.headers.get("accept"))
 
+    print(
+        "[agui_server.run_agent] request received",
+        f"thread_id={getattr(input_data, 'thread_id', None)}",
+        f"run_id={getattr(input_data, 'run_id', None)}",
+        f"messages={len(getattr(input_data, 'messages', []) or [])}",
+        flush=True,
+    )
+
     async def event_generator() -> AsyncIterator[str]:
         try:
             yield encoder.encode(
@@ -141,6 +149,7 @@ async def run_agent(input_data: RunAgentInput, request: Request) -> StreamingRes
 
             current_state = dict(input_data.state or {})
             current_state.setdefault("available_tools", [tool["name"] for tool in TOOL_DEFINITIONS])
+            print("[agui_server.run_agent] state snapshot prepared", current_state, flush=True)
             yield encoder.encode(
                 StateSnapshotEvent(
                     type=EventType.STATE_SNAPSHOT,
@@ -155,7 +164,12 @@ async def run_agent(input_data: RunAgentInput, request: Request) -> StreamingRes
                 )
             )
             user_text = _latest_user_text(input_data)
+            print(f"[agui_server.run_agent] latest user text: {user_text!r}", flush=True)
             tool_name, arguments = _parse_tool_request(user_text)
+            print(
+                f"[agui_server.run_agent] parsed tool request: tool_name={tool_name!r}, arguments={arguments!r}",
+                flush=True,
+            )
             yield encoder.encode(
                 StepFinishedEvent(
                     type=EventType.STEP_FINISHED,
@@ -173,12 +187,20 @@ async def run_agent(input_data: RunAgentInput, request: Request) -> StreamingRes
                     parent_message_id=message_id,
                 )
             )
+            print(
+                f"[agui_server.run_agent] emitted tool call start: tool_call_id={tool_call_id}, tool_name={tool_name}",
+                flush=True,
+            )
             yield encoder.encode(
                 ToolCallArgsEvent(
                     type=EventType.TOOL_CALL_ARGS,
                     tool_call_id=tool_call_id,
                     delta=json.dumps(arguments),
                 )
+            )
+            print(
+                f"[agui_server.run_agent] emitted tool call args: tool_call_id={tool_call_id}, arguments={arguments}",
+                flush=True,
             )
             yield encoder.encode(
                 ToolCallEndEvent(
@@ -187,7 +209,9 @@ async def run_agent(input_data: RunAgentInput, request: Request) -> StreamingRes
                 )
             )
 
+            print(f"[agui_server.run_agent] invoking tool function: {tool_name}", flush=True)
             result = await TOOLS[tool_name](**arguments)
+            print(f"[agui_server.run_agent] tool result: {result}", flush=True)
             yield encoder.encode(
                 ToolCallResultEvent(
                     type=EventType.TOOL_CALL_RESULT,
@@ -209,6 +233,7 @@ async def run_agent(input_data: RunAgentInput, request: Request) -> StreamingRes
             )
 
             answer = f"{tool_name}({arguments['a']}, {arguments['b']}) = {result}"
+            print(f"[agui_server.run_agent] streaming final answer: {answer}", flush=True)
             async for event in _stream_text(encoder, message_id, answer):
                 yield event
 
@@ -221,6 +246,7 @@ async def run_agent(input_data: RunAgentInput, request: Request) -> StreamingRes
                 )
             )
         except Exception as exc:
+            print(f"[agui_server.run_agent] error: {exc!r}", flush=True)
             yield encoder.encode(
                 RunErrorEvent(
                     type=EventType.RUN_ERROR,

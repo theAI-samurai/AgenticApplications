@@ -1,0 +1,12 @@
+{
+  "name": "agui_basics",
+  "version": "1.0.0",
+  "description": "This project demonstrates how to expose simple Python tools through an AG-UI compatible backend and interact with them from a browser-based A2UI renderer.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

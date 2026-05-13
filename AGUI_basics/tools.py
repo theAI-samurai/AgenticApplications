@@ -4,11 +4,15 @@ from __future__ import annotations
 
 
 async def add(a: float, b: float) -> float:
-    return a + b
+    result = a + b
+    print(f"[tools.add] called with a={a}, b={b}, result={result}", flush=True)
+    return result
 
 
 async def subtract(a: float, b: float) -> float:
-    return a - b
+    result = a - b
+    print(f"[tools.subtract] called with a={a}, b={b}, result={result}", flush=True)
+    return result
 
 
 TOOLS = {

@@ -1,6 +1,6 @@
 # AG-UI Basics
 
-This project demonstrates how to expose simple Python tools through an AG-UI compatible backend and interact with them from a Streamlit UI.
+This project demonstrates how to expose simple Python tools through an AG-UI compatible backend and interact with them from a browser-based A2UI renderer.
 
 The example reuses the math tools from `mcp_simple`:
 
@@ -94,15 +94,9 @@ When the UI sends a prompt such as `add 10 and 5`, this server:
 
 ### `ui/streamlit_app.py`
 
-The Streamlit frontend.
+Legacy Streamlit frontend.
 
-It sends user messages to the AG-UI server and reads the Server-Sent Events response. It displays:
-
-- the chat conversation
-- the current synced agent state
-- the raw AG-UI events from the last run
-
-The raw event viewer is useful for learning how AG-UI works.
+It still works as a reference client, but the primary UI for this demo is now the browser renderer served from the AG-UI backend.
 
 ### `mcp_tools_server.py`
 
@@ -129,7 +123,7 @@ Python dependencies for the demo:
 Use the existing `agntcy` conda environment.
 
 ```bash
-cd /Users/anankitm/Documents/oracle_repos/AGUI_study/AGUI_basics
+cd /home/ankit/Desktop/personal/AgenticApplications/AGUI_basics
 conda activate agntcy
 pip install -r requirements.txt
 ```
@@ -139,7 +133,7 @@ pip install -r requirements.txt
 Start the backend:
 
 ```bash
-cd /Users/anankitm/Documents/oracle_repos/AGUI_study/AGUI_basics
+cd /home/ankit/Desktop/personal/AgenticApplications/AGUI_basics
 conda activate agntcy
 python agui_server.py
 ```
@@ -165,7 +159,7 @@ http://localhost:8001/tools
 If port `8001` is already in use, run the server on another port:
 
 ```bash
-cd /Users/anankitm/Documents/oracle_repos/AGUI_study/AGUI_basics
+cd /home/ankit/Desktop/personal/AgenticApplications/AGUI_basics
 conda activate agntcy
 uvicorn agui_server:app --host 127.0.0.1 --port 8011
 ```
@@ -176,23 +170,31 @@ In that case, use this endpoint in the Streamlit sidebar:
 http://localhost:8011/
 ```
 
-## Run The Streamlit UI
+## Run The A2UI Browser UI
 
-Open a second terminal and run:
+Start the standalone A2UI app in a second terminal:
 
 ```bash
-cd /Users/anankitm/Documents/oracle_repos/AGUI_study/AGUI_basics
+cd /home/ankit/Desktop/personal/AgenticApplications/AGUI_basics
+conda activate agntcy
+python ui/a2ui_app.py
+```
+
+Then open:
+
+```text
+http://localhost:8502/
+```
+
+That page is the separate A2UI implementation. It loads the shared tool list from the AG-UI server and proxies runs through the AG-UI SSE endpoint, but the UI itself lives entirely under `ui/`.
+
+If you want to compare behavior with the older Streamlit client, you can still run:
+
+```bash
+cd /home/ankit/Desktop/personal/AgenticApplications/AGUI_basics
 conda activate agntcy
 streamlit run ui/streamlit_app.py
 ```
-
-Streamlit will print a local URL, usually:
-
-```text
-http://localhost:8501
-```
-
-Open that URL in the browser.
 
 Try prompts like:
 
@@ -207,7 +209,7 @@ what is the difference between 25 and 9
 This is only for comparison with the original MCP-style tool server.
 
 ```bash
-cd /Users/anankitm/Documents/oracle_repos/AGUI_study/AGUI_basics
+cd /home/ankit/Desktop/personal/AgenticApplications/AGUI_basics
 conda activate agntcy
 python mcp_tools_server.py
 ```
@@ -217,6 +219,16 @@ The MCP endpoint runs at:
 ```text
 http://localhost:8000/mcp
 ```
+
+## A2UI + AG-UI In This Demo
+
+The A2UI browser client now lives in [ui/a2ui_client.html](ui/a2ui_client.html) and is served by the standalone app in [ui/a2ui_app.py](ui/a2ui_app.py).
+
+That means:
+
+- MCP still provides tool discovery and direct tool calls.
+- AG-UI still streams lifecycle, tool, and state events.
+- The A2UI UI is a separate process that proxies to the AG-UI endpoint instead of being embedded in `agui_server.py`.
 
 ## Expected Flow of AGUI
 
